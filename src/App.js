@@ -1,4 +1,5 @@
 import React from 'react';
+import 'react-native-gesture-handler';
 import {
   SafeAreaView,
   ScrollView,
@@ -13,8 +14,8 @@ import {
 const App = () => {
   return (
     <>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Text>Hello monster</Text>
+      <StatusBar />
+      <Text>Hello monster updated</Text>
     </>
 
   );
