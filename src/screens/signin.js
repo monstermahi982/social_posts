@@ -3,27 +3,46 @@ import { View, StyleSheet, SafeAreaView } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+import auth from '@react-native-firebase/auth';
+
 
 export default function signin() {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
-    const [name, setName] = React.useState('');
-    const [image, setImage] = React.useState('');
 
+    const creatAccount = async () => {
+        if (!email && !password) {
+            alert("please fill all the feilds")
+            return
+        }
+        const result = await auth().createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                alert('User account created & signed in!');
+            })
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use') {
+                    alert('That email address is already in use!');
+                }
+
+                if (error.code === 'auth/invalid-email') {
+                    alert('That email address is invalid!');
+                }
+
+                if (error.code === 'auth/weak-password') {
+                    alert('Password should be at least 6 characters');
+                }
+
+                console.error(error);
+            });
+        setEmail('')
+        setPassword('')
+    }
     return (
         <>
             <SafeAreaView style={styles.container}>
                 <SimpleIcon name="social-instagram" size={200} color="red" style={styles.img} />
                 <View style={styles.form}>
                     <Text style={styles.text}>Create account  <MaterialIcon name="card-account-details-outline" size={35} /></Text>
-                    <TextInput
-                        label="Name"
-                        value={name}
-                        mode="outlined"
-                        placeholder="enter your name"
-                        right={<TextInput.Icon name="email" />}
-                        onChangeText={text => setName(text)}
-                    />
                     <TextInput
                         label="Email"
                         value={email}
@@ -42,7 +61,7 @@ export default function signin() {
                         right={<TextInput.Icon name="eye" />}
                         onChangeText={text => setPassword(text)}
                     />
-                    <Button mode="contained" onPress={() => console.log('Pressed')}>
+                    <Button mode="contained" onPress={() => creatAccount()}>
                         Submit
                     </Button>
                 </View>

@@ -12,6 +12,7 @@ import {
 import Login from './screens/Login';
 import Signin from './screens/signin';
 import MenuList from './screens/MenuList';
+import AddPost from './screens/AddPost';
 
 
 
@@ -20,8 +21,9 @@ const App = () => {
     <>
       <StatusBar />
       {/* <Login /> */}
-      <Signin />
-      {/* <MenuList /> */}
+      {/* <Signin /> */}
+      <MenuList />
+      {/* <AddPost /> */}
     </>
 
   );

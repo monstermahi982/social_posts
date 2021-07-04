@@ -2,44 +2,10 @@ import React from 'react'
 import { View, StyleSheet, FlatList } from 'react-native'
 import { Avatar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
-
-const image = { uri: "https://source.unsplash.com/1600x900/?computer,code" }
-
-
-const DATA = [
-    {
-        id: 1,
-        image: 'https://source.unsplash.com/1600x900/?computer,code',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-    {
-        id: 2,
-        image: 'https://source.unsplash.com/1600x900/?nature,earth',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-    {
-        id: 3,
-        image: 'https://source.unsplash.com/1600x900/?nature,code',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-    {
-        id: 4,
-        image: 'https://source.unsplash.com/1600x900/?computer,code',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-    {
-        id: 5,
-        image: 'https://source.unsplash.com/1600x900/?computer,code',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-    {
-        id: 6,
-        image: 'https://source.unsplash.com/1600x900/?computer,code',
-        desc: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ea, natus.',
-    },
-];
+import firestore from '@react-native-firebase/firestore';
 
 const CardItem = (item) => {
+
     return (
         <>
             <Card style={styles.card}>
@@ -56,11 +22,26 @@ const CardItem = (item) => {
 
 export default function MenuList() {
 
+    const [dataItems, setDataItems] = React.useState([])
+
+    React.useEffect(() => {
+        postData()
+        return () => {
+            console.log("clean up");
+        }
+    }, [])
+
+    const postData = async () => {
+        const querySnap = await firestore().collection('posts').get()
+        const result = querySnap.docs.map(docSnap => docSnap.data())
+        setDataItems(result)
+    }
+
     return (
         <>
             <FlatList
-                data={DATA}
-                keyExtractor={(item) => item.id}
+                data={dataItems}
+                keyExtractor={(item) => item.image}
                 renderItem={({ item }) => CardItem(item)}
             />
         </>

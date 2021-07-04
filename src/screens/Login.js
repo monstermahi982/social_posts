@@ -2,11 +2,30 @@ import React from 'react'
 import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
-
+import auth from '@react-native-firebase/auth';
 
 export default function Login() {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+
+    const signinAccount = async () => {
+        if (!email && !password) {
+            alert("please fill all the feilds")
+            return
+        }
+        const result = await auth().signInWithEmailAndPassword(email, password)
+            .then(() => {
+                alert('User signin successfully');
+            })
+            .catch(error => {
+                if (error.code === 'auth/wrong-password') {
+                    alert('The password is invalid or the user does not have a password.');
+                }
+                console.error(error);
+            });
+        setEmail('')
+        setPassword('')
+    }
     return (
         <>
             <SafeAreaView style={styles.container}>
@@ -31,7 +50,7 @@ export default function Login() {
                         right={<TextInput.Icon name="eye" />}
                         onChangeText={text => setPassword(text)}
                     />
-                    <Button mode="contained" onPress={() => console.log('Pressed')}>
+                    <Button mode="contained" onPress={() => signinAccount()}>
                         Submit
                     </Button>
                 </View>
