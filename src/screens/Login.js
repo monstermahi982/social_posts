@@ -1,10 +1,10 @@
 import React from 'react'
-import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView } from 'react-native'
+import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import auth from '@react-native-firebase/auth';
 
-export default function Login() {
+export default function Login({ navigation }) {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
@@ -53,6 +53,7 @@ export default function Login() {
                     <Button mode="contained" onPress={() => signinAccount()}>
                         Submit
                     </Button>
+                    <TouchableOpacity onPress={() => navigation.navigate('Signin')}><Text style={styles.switchText}>Create new account</Text></TouchableOpacity>
                 </View>
             </SafeAreaView>
         </>
@@ -77,5 +78,11 @@ const styles = StyleSheet.create({
     img: {
         margin: 40,
         textAlign: "center",
+    },
+    switchText: {
+        textAlign: 'center',
+        fontSize: 20,
+        textDecorationLine: 'underline',
+        textTransform: 'capitalize'
     }
 });
