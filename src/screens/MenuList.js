@@ -40,7 +40,7 @@ export default function MenuList() {
     return (
         <>
             <FlatList
-                data={dataItems}
+                data={dataItems.reverse()}
                 keyExtractor={(item) => item.image}
                 renderItem={({ item }) => CardItem(item)}
             />

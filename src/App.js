@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
 import {
   SafeAreaView,
@@ -25,17 +25,19 @@ const Stack = createStackNavigator();
 
 
 const App = () => {
-  const [user, setUser] = React.useState("")
+  const [user, setUser] = useState(false)
   // const user = ""
-  React.useEffect(() => {
+  useEffect(() => {
+    console.log("app called");
     const unsubscribe = auth().onAuthStateChanged((userExit) => {
       if (userExit) {
-        console.log(userExit);
-        setUser(userExit)
+        setUser(true)
+      } else {
+        setUser(false)
       }
     })
-    return () => unsubscribe
-  }, [])
+    // return () => unsubscribe
+  }, [user])
 
   return (
     <NavigationContainer>
