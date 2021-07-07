@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, SafeAreaView, ToastAndroid, TouchableOpacity } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import auth from '@react-native-firebase/auth';
@@ -15,7 +15,7 @@ export default function Login({ navigation }) {
         }
         const result = await auth().signInWithEmailAndPassword(email, password)
             .then(() => {
-                alert('User signin successfully');
+                ToastAndroid.show("Welcome back USER", ToastAndroid.SHORT);
             })
             .catch(error => {
                 if (error.code === 'auth/wrong-password') {

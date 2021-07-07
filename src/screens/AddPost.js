@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, SafeAreaView, KeyboardAvoidingView, Image } from 'react-native'
+import { View, StyleSheet, SafeAreaView, ToastAndroid, Image } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -23,11 +23,11 @@ export default function AddPost() {
                 (snapshot) => {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     if (progress == 100) {
-                        alert("image uploaded")
+                        ToastAndroid.show("Image uploaded Successfully", ToastAndroid.SHORT);
                     }
                 },
                 (error) => {
-                    // Handle unsuccessful uploads
+                    ToastAndroid.show("errro :- " + error, ToastAndroid.SHORT);
                 },
                 () => {
                     result.snapshot.ref.getDownloadURL().then((downloadURL) => {
@@ -49,11 +49,11 @@ export default function AddPost() {
                 image, desc,
                 uid: auth().currentUser.uid
             }).then(() => {
-                alert('User added!');
-            }).catch((err) => console.log(err))
+                ToastAndroid.show("Post Uploaded Successfully", ToastAndroid.SHORT);
+            }).catch((err) => ToastAndroid.show("error :- " + err, ToastAndroid.SHORT))
 
         } catch (error) {
-            console.log(error);
+            ToastAndroid.show("error :- " + error, ToastAndroid.SHORT)
         }
 
         setImage('')

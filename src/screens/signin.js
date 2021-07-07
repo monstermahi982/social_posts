@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, SafeAreaView, TouchableOpacity, ToastAndroid } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -17,7 +17,7 @@ export default function signin({ navigation }) {
         }
         const result = await auth().createUserWithEmailAndPassword(email, password)
             .then(() => {
-                alert('User account created & signed in!');
+                ToastAndroid.show("Account Created Successfully", ToastAndroid.SHORT)
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
