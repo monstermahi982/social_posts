@@ -9,7 +9,7 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
 
-export default function AddPost() {
+export default function AddPost({ navigation }) {
     const [image, setImage] = React.useState(null);
     const [desc, setDesc] = React.useState('');
 
@@ -47,7 +47,9 @@ export default function AddPost() {
         try {
             await firestore().collection('posts').add({
                 image, desc,
-                uid: auth().currentUser.uid
+                uid: auth().currentUser.uid,
+                likes: 0,
+                dislikes: 0
             }).then(() => {
                 ToastAndroid.show("Post Uploaded Successfully", ToastAndroid.SHORT);
             }).catch((err) => ToastAndroid.show("error :- " + err, ToastAndroid.SHORT))
@@ -58,6 +60,7 @@ export default function AddPost() {
 
         setImage('')
         setDesc('')
+        navigation.navigate('Home')
     }
 
     return (

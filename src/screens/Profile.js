@@ -6,34 +6,32 @@ import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 
-const CardItem = (item) => {
+// const CardItem = (item) => {
 
 
-    const deletePost = (id, image) => {
-        const storageRef = storage().refFromURL(image)
-        const imageRef = storage().ref(storageRef.fullPath)
-        imageRef.delete().then(() => console.log("image deleted"))
-        firestore().collection('posts').doc(id).delete().then(() => {
-            ToastAndroid.show("Post deleted successfully", ToastAndroid.SHORT)
-            setState(!state)
-        })
+//     const deletePost = (id, image) => {
+//         const storageRef = storage().refFromURL(image)
+//         const imageRef = storage().ref(storageRef.fullPath)
+//         imageRef.delete().then(() => console.log("image deleted"))
+//         firestore().collection('posts').doc(id).delete().then(() => {
+//             ToastAndroid.show("Post deleted successfully", ToastAndroid.SHORT)
+//             setState(!state)
+//         })
 
-    }
+//     }
 
-    return (
-        <>
-            <Card style={styles.card}>
-                <Card.Cover source={{ uri: item.image }} />
-                <Paragraph style={styles.content}>{item.desc}</Paragraph>
-                <Card.Actions style={styles.actions}>
-                    <Button style={styles.btn} mode="text" onPress={() => { }} > <SimpleIcon name="dislike" size={25} color="red" />    30</Button>
-                    <Button style={styles.btn} mode="text" onPress={() => { }}><SimpleIcon name="like" size={25} color="green" />     50</Button>
-                    <Button style={styles.btn} mode="text" onPress={() => deletePost(item.id, item.image)}><SimpleIcon name="trash" size={25} color="red" />     50</Button>
-                </Card.Actions>
-            </Card>
-        </>
-    )
-}
+//     return (
+//         <>
+//             <Card style={styles.card}>
+//                 <Card.Cover source={{ uri: item.image }} />
+//                 <Paragraph style={styles.content}>{item.desc}</Paragraph>
+//                 <Card.Actions style={styles.actions}>
+//                     <Button style={styles.btn} mode="text" onPress={() => deletePost(item.id, item.image)}><SimpleIcon name="trash" size={25} color="red" />     50</Button>
+//                 </Card.Actions>
+//             </Card>
+//         </>
+//     )
+// }
 
 export default function Profile() {
     const [state, setState] = React.useState(false)
@@ -50,7 +48,7 @@ export default function Profile() {
         // return () => {
         //     console.log("clean up");
         // }
-    }, [])
+    }, [state])
 
 
 
@@ -58,6 +56,17 @@ export default function Profile() {
         const querySnap = await firestore().collection('posts').where('uid', '==', auth().currentUser.uid).get()
         const result = querySnap.docs.map(docSnap => ({ ...docSnap.data(), id: docSnap.id }))
         setDataItems(result)
+    }
+
+    const deletePost = (id, image) => {
+        const storageRef = storage().refFromURL(image)
+        const imageRef = storage().ref(storageRef.fullPath)
+        imageRef.delete().then(() => console.log("image deleted"))
+        firestore().collection('posts').doc(id).delete().then(() => {
+            ToastAndroid.show("Post deleted successfully", ToastAndroid.SHORT)
+            setState(!state)
+        })
+
     }
     return (
         <>
@@ -72,7 +81,15 @@ export default function Profile() {
                 <FlatList
                     data={dataItems.reverse()}
                     keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => CardItem(item)}
+                    renderItem={({ item }) =>
+                        <Card style={styles.card}>
+                            <Card.Cover source={{ uri: item.image }} />
+                            <Paragraph style={styles.content}>{item.desc}</Paragraph>
+                            <Card.Actions style={styles.actions}>
+                                <Button style={styles.btn} mode="text" onPress={() => deletePost(item.id, item.image)}><SimpleIcon name="trash" size={25} color="red" />     50</Button>
+                            </Card.Actions>
+                        </Card>
+                    }
                     style={styles.menulist}
                 />
             </View>
@@ -91,7 +108,8 @@ const styles = StyleSheet.create({
         elevation: 10
     },
     btn: {
-        width: "33.3%",
+        width: 100,
+        marginHorizontal: 120
     },
     content: {
         color: "blue",
