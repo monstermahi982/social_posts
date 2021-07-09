@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, SafeAreaView, ToastAndroid, Image } from 'react-native'
+import { View, StyleSheet, SafeAreaView, ToastAndroid, Image, ActivityIndicator } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -12,24 +12,28 @@ import auth from '@react-native-firebase/auth';
 export default function AddPost({ navigation }) {
     const [image, setImage] = React.useState(null);
     const [desc, setDesc] = React.useState('');
+    const [actloading, setActloading] = React.useState(false)
 
     const showImage = { uri: image }
 
     const takeImage = () => {
         launchImageLibrary({ quality: 0.5 }, (fileObj) => {
-            // console.log(fileObj.assets[0].uri);
+            setActloading(true)
             const result = storage().ref().child(`/images/${Date.now()}`).putFile(fileObj.assets[0].uri)
             result.on('state_changed',
                 (snapshot) => {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                     if (progress == 100) {
+                        setActloading(false)
                         ToastAndroid.show("Image uploaded Successfully", ToastAndroid.SHORT);
                     }
                 },
                 (error) => {
+                    setActloading(false)
                     ToastAndroid.show("errro :- " + error, ToastAndroid.SHORT);
                 },
                 () => {
+                    setActloading(false)
                     result.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         setImage(downloadURL)
                     });
@@ -40,7 +44,9 @@ export default function AddPost({ navigation }) {
     }
 
     const submitPost = async () => {
+        setActloading(true)
         if (!desc && !image) {
+            setActloading(false)
             alert("enter all details")
             return
         }
@@ -51,10 +57,16 @@ export default function AddPost({ navigation }) {
                 likes: 0,
                 dislikes: 0
             }).then(() => {
+                setActloading(false)
                 ToastAndroid.show("Post Uploaded Successfully", ToastAndroid.SHORT);
-            }).catch((err) => ToastAndroid.show("error :- " + err, ToastAndroid.SHORT))
+            }).catch((err) => {
+                setActloading(false)
+                ToastAndroid.show("error :- " + err, ToastAndroid.SHORT)
+
+            })
 
         } catch (error) {
+            setActloading(false)
             ToastAndroid.show("error :- " + error, ToastAndroid.SHORT)
         }
 
@@ -70,24 +82,30 @@ export default function AddPost({ navigation }) {
                 :
                 <SimpleIcon name="social-instagram" size={200} color="red" style={styles.img} />}
 
+            {
+                actloading ?
+                    <ActivityIndicator style={styles.loading} size="large" color="red" />
+                    :
+                    <View style={styles.form}>
+                        <Text style={styles.text}>Add POST  <MaterialIcon name="post" size={30} /></Text>
+                        <TextInput
+                            label="Description"
+                            value={desc}
+                            mode="outlined"
+                            outlineColor="red"
+                            placeholder="enter the descritpion"
+                            right={<TextInput.Icon name="text" />}
+                            multiline={true}
+                            onChangeText={text => setDesc(text)}
+                        />
+                        <Button mode="outlined" onPress={() => takeImage()}>Upload Image</Button>
+                        <Button disabled={image ? false : true} mode="contained" onPress={() => submitPost()}>
+                            Submit
+                        </Button>
+                    </View>
+            }
 
-            <View style={styles.form}>
-                <Text style={styles.text}>Add POST  <MaterialIcon name="post" size={30} /></Text>
-                <TextInput
-                    label="Description"
-                    value={desc}
-                    mode="outlined"
-                    outlineColor="red"
-                    placeholder="enter the descritpion"
-                    right={<TextInput.Icon name="text" />}
-                    multiline={true}
-                    onChangeText={text => setDesc(text)}
-                />
-                <Button mode="outlined" onPress={() => takeImage()}>Upload Image</Button>
-                <Button disabled={image ? false : true} mode="contained" onPress={() => submitPost()}>
-                    Submit
-                </Button>
-            </View>
+
         </SafeAreaView>
     )
 }
@@ -115,5 +133,10 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 250,
         marginVertical: 50
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignSelf: 'center',
     }
 });

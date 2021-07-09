@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import 'react-native-gesture-handler';
 import {
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
 } from 'react-native';
 import Login from './screens/Login';
@@ -26,9 +22,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   const [user, setUser] = useState(false)
-  // const user = ""
   useEffect(() => {
-    console.log("app called");
     const unsubscribe = auth().onAuthStateChanged((userExit) => {
       if (userExit) {
         setUser(true)
@@ -36,7 +30,6 @@ const App = () => {
         setUser(false)
       }
     })
-    // return () => unsubscribe
   }, [user])
 
   return (

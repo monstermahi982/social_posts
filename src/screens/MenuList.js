@@ -1,41 +1,20 @@
 import React from 'react'
-import { View, StyleSheet, FlatList, ToastAndroid } from 'react-native'
+import { View, StyleSheet, FlatList, ToastAndroid, ActivityIndicator } from 'react-native'
 import { Avatar, Text, Button, Card, Title, Paragraph } from 'react-native-paper';
 import SimpleIcon from 'react-native-vector-icons/SimpleLineIcons'
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-
-// const CardItem = (item) => {
-
-//     const postLike = () => {
-//         console.log("called");
-//     }
-
-//     return (
-//         <>
-//             <Card style={styles.card}>
-//                 <Card.Cover source={{ uri: item.image }} />
-//                 <Paragraph style={styles.content}>{item.desc}</Paragraph>
-//                 <Card.Actions style={styles.actions}>
-//                     <Button style={styles.btn} mode="text" onPress={() => { postLike() }} > <SimpleIcon name="dislike" size={25} color="red" />    30</Button>
-//                     <Button style={styles.btn} mode="text" onPress={() => { }}><SimpleIcon name="like" size={25} color="green" />     50</Button>
-//                 </Card.Actions>
-//             </Card>
-//         </>
-//     )
-// }
 
 export default function MenuList() {
 
     const [dataItems, setDataItems] = React.useState([])
     const [like, setLike] = React.useState(true)
     const [dislike, setDislike] = React.useState(true)
+    const [loading, setLoading] = React.useState(false)
+    const [actloading, setActloading] = React.useState(false)
 
     React.useEffect(() => {
         postData()
-        // return () => {
-        //     console.log("clean up");
-        // }
     }, [like, dislike])
 
     const postData = async () => {
@@ -51,7 +30,6 @@ export default function MenuList() {
                 // getting old likes
                 const getDate = await firestore().collection('posts').doc(id).get()
                 const getLike = getDate.data()['likes']
-                console.log(getLike);
                 // setting updated like
                 const updateLike = await firestore().collection('posts').doc(id).update({
                     likes: getLike + 1
@@ -102,22 +80,33 @@ export default function MenuList() {
 
     return (
         <>
-            <FlatList
-                data={dataItems.reverse()}
-                keyExtractor={(item) => item.image}
-                renderItem={({ item }) =>
+            {
+                actloading ?
+                    <ActivityIndicator style={styles.loading} size="large" color="red" />
+                    :
+                    <FlatList
+                        data={dataItems.reverse()}
+                        keyExtractor={(item) => item.image}
+                        onRefresh={() => {
+                            setLoading(true)
+                            postData()
+                            setLoading(false)
+                        }}
+                        refreshing={loading}
+                        renderItem={({ item }) =>
 
-                    <Card style={styles.card}>
-                        <Card.Cover source={{ uri: item.image }} />
-                        <Paragraph style={styles.content}>{item.desc}</Paragraph>
-                        <Card.Actions style={styles.actions}>
-                            <Button style={styles.btn} mode="text" onPress={() => { postDislike(item.id) }} > <SimpleIcon name="dislike" size={25} color="red" />    {item.dislikes}</Button>
-                            <Button style={styles.btn} mode="text" onPress={() => { postLike(item.id) }}><SimpleIcon name="like" size={25} color="green" />     {item.likes}</Button>
-                        </Card.Actions>
-                    </Card>
+                            <Card style={styles.card}>
+                                <Card.Cover source={{ uri: item.image }} />
+                                <Paragraph style={styles.content}>{item.desc}</Paragraph>
+                                <Card.Actions style={styles.actions}>
+                                    <Button style={styles.btn} mode="text" onPress={() => { postDislike(item.id) }} > <SimpleIcon name="dislike" size={25} color="red" />    {item.dislikes}</Button>
+                                    <Button style={styles.btn} mode="text" onPress={() => { postLike(item.id) }}><SimpleIcon name="like" size={25} color="green" />     {item.likes}</Button>
+                                </Card.Actions>
+                            </Card>
 
-                }
-            />
+                        }
+                    />
+            }
         </>
     )
 }
@@ -139,5 +128,10 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 30,
         fontSize: 15
+    },
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignSelf: 'center',
     }
 });
